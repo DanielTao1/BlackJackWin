@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💎豪华21点💵-完整版</title>
+    <style>
+        /* 原有样式保持不变 */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px;
+            flex-wrap: wrap;
+        }
+        .auth-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 1000;
+        }
+        .game-area {
+            width: 600px;
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px;
+        }
+        .bet-buttons button {
+            margin: 5px;
+            padding: 10px 20px;
+            background: #4CAF50;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        input {
+            padding: 8px;
+            margin: 5px;
+            width: 200px;
+            background: #333;
+            border: 1px solid #444;
+            color: white;
+        }
+        .cards {
+            min-height: 100px;
+            padding: 15px;
+            background: #333;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .leaderboard {
+            width: 300px;
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px;
+        }
+        .money {
+            color: #FFD700;
+            font-size: 24px;
+            margin: 10px;
+        }
+        .card-symbol {
+            margin: 5px;
+            padding: 8px;
+            background: #444;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .ad-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 220px;
+            padding: 10px;
+            background: rgba(51, 51, 51, 0.9);
+            border-radius: 8px;
+            z-index: 1000;
+        }
+        #ad-button {
+            width: 100%;
+            padding: 8px;
+            background: #FF5722;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .redeem-box {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            background: rgba(51, 51, 51, 0.9);
+            padding: 10px;
+            border-radius: 8px;
+            z-index: 1000;
+        }
+        .redeem-box input {
+            padding: 8px;
+            margin-right: 5px;
+            background: #333;
+            border: 1px solid #444;
+            color: white;
+        }
+        .redeem-box button {
+            padding: 8px;
+            background: #FF5722;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-box" id="auth-box">
+        <h2>用户登录/注册</h2>
+        <input type="text" id="username" placeholder="用户名">
+        <input type="password" id="password" placeholder="密码">
+        <button onclick="login()">登录</button>
+        <button onclick="register()">注册</button>
+    </div>
+
+    <div class="container" id="game-container" style="display: none;">
+        <div class="game-area">
+            <h1>💰富豪版21点💎</h1>
+            <div class="money">当前资金：¥<span id="current-money">0</span></div>
+            
+            <div class="bet-buttons">
+                <button onclick="placeBet(5000)">押 ¥5,000</button>
+                <button onclick="placeBet(10000)">押 ¥10,000</button>
+                <button onclick="placeBet(50000)">押 ¥50,000</button>
+                <button onclick="placeBet(100000)">押 ¥100,000</button>
+                <button onclick="placeBet(300000)">押 ¥300,000</button>
+                <button onclick="placeBet(500000)">押 ¥500,000</button>
+                <button onclick="placeBet(1000000)">押 ¥1,000,000</button>
+                <button onclick="placeBet(5000000)">押 ¥5,000,000</button>
+                <button onclick="placeBet(10000000)">押 ¥10,000,000</button>
+                <button onclick="placeBet(100000000)">押 ¥100,000,000</button>
+            </div>
+
+            <div id="game-controls" style="display: none;">
+                <div class="cards">
+                    <h3>庄家的牌 (<span id="dealer-score">0</span>)</h3>
+                    <div id="dealer-cards"></div>
+                </div>
+                <div class="cards">
+                    <h3>你的牌 (<span id="player-score">0</span>)</h3>
+                    <div id="player-cards"></div>
+                </div>
+                <button onclick="hit()">要牌</button>
+                <button onclick="stand()">停牌</button>
+                <button onclick="resetGame()">重新开始</button>
+                <div id="game-result" style="color: #FF5722; font-size: 24px; margin: 15px;"></div>
+            </div>
+        </div>
+
+        <div class="leaderboard">
+            <h2>🏆 富豪排行榜</h2>
+            <ul id="leaderboard-list"></ul>
+        </div>
+    </div>
+
+    <div class="ad-container">
+        <button id="ad-button" onclick="watchAd()">🎥 看视频得1万金币💵</button>
+        <div id="ad-status"></div>
+    </div>
+
+    <div class="redeem-box">
+        <input type="text" id="redeem-code" placeholder="输入兑换码">
+        <button onclick="redeemCode()">兑换</button>
+    </div>
+
+    <!-- 音频元素（需要准备以下三个MP3文件） -->
+    <audio id="click-sound" src="click.mp3" preload="auto"></audio>
+    <audio id="win-sound" src="win.mp3" preload="auto"></audio>
+    <audio id="lose-sound" src="lose.mp3" preload="auto"></audio>
+
+    <script>
+        // 用户管理系统
+        let users = JSON.parse(localStorage.getItem('blackjackUsers')) || [];
+        let currentUser = null;
+        let gameActive = false;
+
+        // 增强版声音播放函数
+        function playSound(id) {
+            try {
+                const sound = document.getElementById(id);
+                sound.currentTime = 0;
+                sound.play().catch(error => {
+                    console.log('自动播放被阻止，需要用户交互');
+                });
+            } catch (e) {
+                console.error('声音播放失败:', e);
+            }
+        }
+
+        function login() {
+            playSound('click-sound');
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            const user = users.find(u => u.username === username);
+            if (user && user.password === password) {
+                currentUser = user;
+                startGameSession();
+            } else {
+                playSound('lose-sound');
+                alert('用户名或密码错误');
+            }
+        }
+
+        function register() {
+            playSound('click-sound');
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (users.some(u => u.username === username)) {
+                playSound('lose-sound');
+                alert('用户名已存在');
+                return;
+            }
+            
+            const newUser = {
+                username,
+                password,
+                money: 100000,
+                adLastUsed: 0
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('blackjackUsers', JSON.stringify(users));
+            currentUser = newUser;
+            startGameSession();
+            playSound('win-sound');
+        }
+
+        function startGameSession() {
+            document.getElementById('auth-box').style.display = 'none';
+            document.getElementById('game-container').style.display = 'flex';
+            updateMoneyDisplay();
+            initializeDeck();
+            updateLeaderboard();
+        }
+
+        // 游戏核心逻辑
+        let deck = [];
+        let dealerHand = [];
+        let playerHand = [];
+        let currentBet = 0;
+
+        function initializeDeck() {
+            deck = [];
+            const suits = ['♠', '♣', '♥', '♦'];
+            const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+            
+            for (let suit of suits) {
+                for (let value of values) {
+                    deck.push({
+                        suit,
+                        value,
+                        color: (suit === '♥' || suit === '♦') ? 'red' : 'white'
+                    });
+                }
+            }
+            
+            // Fisher-Yates洗牌算法
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+        }
+
+        function calculateScore(hand) {
+            let score = 0;
+            let aceCount = 0;
+
+            for (let card of hand) {
+                if (card.value === 'A') {
+                    aceCount++;
+                    score += 11;
+                } else if (['J', 'Q', 'K'].includes(card.value)) {
+                    score += 10;
+                } else {
+                    score += parseInt(card.value);
+                }
+            }
+
+            while (score > 21 && aceCount > 0) {
+                score -= 10;
+                aceCount--;
+            }
+            return score;
+        }
+
+        function dealCard(hand) {
+            if (deck.length < 10) initializeDeck();
+            const card = deck.pop();
+            hand.push(card);
+            return card;
+        }
+
+        function updateDisplay() {
+            document.getElementById('dealer-cards').innerHTML = dealerHand.map((card, index) => 
+                index === 0 && gameActive ? 
+                '<span class="card-symbol" style="background: #555">🂠</span>' : 
+                `<span class="card-symbol" style="color: ${card.color}">${card.value}${card.suit}</span>`
+            ).join('');
+
+            document.getElementById('player-cards').innerHTML = playerHand.map(card => 
+                `<span class="card-symbol" style="color: ${card.color}">${card.value}${card.suit}</span>`
+            ).join('');
+
+            document.getElementById('dealer-score').textContent = gameActive ? 
+                calculateScore([dealerHand[0]]) : 
+                calculateScore(dealerHand);
+                
+            document.getElementById('player-score').textContent = calculateScore(playerHand);
+        }
+
+        function placeBet(amount) {
+            playSound('click-sound');
+            if (!currentUser) return;
+            
+            if (currentUser.money < amount) {
+                playSound('lose-sound');
+                return alert('资金不足！');
+            }
+            
+            currentBet = amount;
+            currentUser.money -= amount;
+            updateMoneyDisplay();
+            
+            initializeDeck();
+            dealerHand = [];
+            playerHand = [];
+            
+            dealCard(dealerHand);
+            dealCard(playerHand);
+            dealCard(playerHand);
+            
+            gameActive = true;
+            document.getElementById('game-controls').style.display = 'block';
+            updateDisplay();
+        }
+
+        function hit() {
+            playSound('click-sound');
+            if (!gameActive) return;
+            
+            dealCard(playerHand);
+            const playerScore = calculateScore(playerHand);
+            updateDisplay();
+            
+            if (playerScore > 21) {
+                endGame('爆牌！庄家获胜');
+            }
+        }
+
+        function stand() {
+            playSound('click-sound');
+            if (!gameActive) return;
+            
+            while (calculateScore(dealerHand) < 17) {
+                dealCard(dealerHand);
+            }
+            
+            const dealerScore = calculateScore(dealerHand);
+            const playerScore = calculateScore(playerHand);
+            
+            let result = '';
+            if (playerScore > 21) {
+                result = '玩家爆牌，庄家赢！';
+            } else if (dealerScore > 21) {
+                result = '庄家爆牌，玩家赢！';
+                currentUser.money += currentBet * 2;
+            } else if (playerScore > dealerScore) {
+                result = '玩家赢！';
+                currentUser.money += currentBet * 2;
+            } else if (playerScore === dealerScore) {
+                result = '平局！';
+                currentUser.money += currentBet;
+            } else {
+                result = '庄家赢！';
+            }
+            
+            endGame(result);
+        }
+
+        function endGame(message) {
+            gameActive = false;
+            updateDisplay();
+            document.getElementById('game-result').textContent = message;
+            
+            if (message.includes('赢')) {
+                playSound('win-sound');
+            } else {
+                playSound('lose-sound');
+            }
+            
+            updateMoneyDisplay();
+            updateLeaderboard();
+            saveUserData();
+        }
+
+        function resetGame() {
+            playSound('click-sound');
+            gameActive = false;
+            currentBet = 0;
+            document.getElementById('game-controls').style.display = 'none';
+            document.getElementById('game-result').textContent = '';
+        }
+
+        // 广告系统
+        async function watchAd() {
+            playSound('click-sound');
+            try {
+                document.getElementById('ad-button').disabled = true;
+                document.getElementById('ad-status').textContent = "广告加载中...";
+                
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                document.getElementById('ad-status').textContent = "正在播放广告...";
+                
+                await new Promise(resolve => setTimeout(resolve, 10000));
+                
+                currentUser.money += 10000;
+                updateMoneyDisplay();
+                saveUserData();
+                document.getElementById('ad-status').textContent = "✓ 成功获得10,000金币！";
+                playSound('win-sound');
+            } finally {
+                document.getElementById('ad-button').disabled = false;
+                setTimeout(() => {
+                    document.getElementById('ad-status').textContent = "";
+                }, 3000);
+            }
+        }
+
+        // 兑换码功能
+        function redeemCode() {
+            playSound('click-sound');
+            const code = document.getElementById('redeem-code').value;
+            if (code === "BlackJackByDaniel") {
+                if (currentUser) {
+                    currentUser.money += 1000000;
+                    updateMoneyDisplay();
+                    saveUserData();
+                    playSound('win-sound');
+                    alert("兑换成功！获得1百万美金！");
+                } else {
+                    playSound('lose-sound');
+                    alert("请先登录或注册！");
+                }
+            } else {
+                playSound('lose-sound');
+                alert("无效的兑换码！");
+            }
+        }
+
+        // 辅助功能
+        function updateMoneyDisplay() {
+            document.getElementById('current-money').textContent = currentUser.money.toLocaleString('zh-CN');
+        }
+
+        function saveUserData() {
+            localStorage.setItem('blackjackUsers', JSON.stringify(users));
+        }
+
+        function updateLeaderboard() {
+            const sorted = [...users].sort((a, b) => b.money - a.money).slice(0, 10);
+            document.getElementById('leaderboard-list').innerHTML = sorted
+                .map((user, index) => `
+                    <li>${index + 1}. ${user.username} - ¥${user.money.toLocaleString('zh-CN')}</li>
+                `).join('');
+        }
+
+        // 初始化
+        initializeDeck();
+    </script>
+</body>
+</html>
